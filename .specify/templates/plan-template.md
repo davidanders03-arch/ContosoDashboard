@@ -31,7 +31,11 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- [ ] **Spec-Driven Development**: Feature fully specified with user stories and acceptance criteria
+- [ ] **Clean Architecture**: Design follows layered architecture with proper separation of concerns
+- [ ] **Security First**: Security considerations documented and mitigations planned
+- [ ] **Test Coverage**: Testing strategy defined with minimum 80% coverage goal
+- [ ] **User-Centric Design**: User needs validated and accessibility considered
 
 ## Project Structure
 

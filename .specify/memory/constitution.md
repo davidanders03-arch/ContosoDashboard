@@ -1,50 +1,40 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+<!--
+Version change: N/A → 1.0.0
+List of modified principles: All principles added (new constitution)
+Added sections: Technical Standards, Development Process
+Removed sections: None
+Templates requiring updates: plan-template.md (constitution check updated)
+Follow-up TODOs: RATIFICATION_DATE needs historical research
+-->
+# ContosoDashboard Constitution
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. Spec-Driven Development (NON-NEGOTIABLE)
+All features must be fully specified before implementation begins. Specifications drive development, not vice versa. Every feature requires complete user stories, acceptance criteria, and technical design before coding starts. Rationale: Ensures quality, prevents scope creep, and enables parallel development.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Clean Architecture
+Application follows layered architecture with clear separation of concerns. Business logic isolated from UI and data layers. Dependency injection used throughout. Services are interface-based for testability and flexibility. Rationale: Maintainable, testable, and adaptable codebase.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Security First
+Security considerations integrated into every feature from design phase. IDOR protection, input validation, and authorization checks mandatory. No feature deployed without security review. Rationale: Protects user data and prevents vulnerabilities in production.
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Test Coverage
+All business logic must have unit tests. Integration tests required for critical paths. UI components tested for accessibility and responsiveness. Minimum 80% code coverage enforced. Rationale: Ensures reliability and prevents regressions.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. User-Centric Design
+Features designed around user needs and workflows. Responsive design for all devices. Accessibility standards (WCAG 2.1) followed. User feedback incorporated into iterations. Rationale: Delivers value and ensures adoption.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Technical Standards
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+Technology stack standardized on ASP.NET Core with Blazor Server. Entity Framework Core for data access. Bootstrap for UI consistency. All code follows C# coding standards with nullable reference types enabled. Database migrations version-controlled.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Process
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+Features follow: Spec → Plan → Tasks → Implement → Test → Review → Deploy. Code reviews mandatory for all changes. CI/CD pipeline enforces quality gates. Documentation updated with each feature.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+Constitution supersedes all other practices. Amendments require consensus from development team and documentation of rationale. Compliance verified in code reviews and automated checks. Version follows semantic versioning.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: TODO(RATIFICATION_DATE): Original adoption date unknown | **Last Amended**: 2025-12-24
