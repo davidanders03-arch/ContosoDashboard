@@ -5,6 +5,15 @@
 **Status**: Draft  
 **Input**: User description from StakeholderDocs/document-upload-and-management-feature.md
 
+## Clarifications
+
+### Session 2025-12-24
+- Q: What are the expected data volume and storage limits for the document management system? → A: 10GB total storage with 100MB per user
+- Q: What are the reliability and availability requirements for the document management system? → A: 99.9% uptime with automatic failover
+- Q: What are the accessibility requirements for the document management interface? → A: WCAG 2.1 AA compliance
+- Q: What are the rate limiting requirements for uploads and API calls? → A: 10 uploads per minute per user, 100 API calls per minute per user
+- Q: What document lifecycle states should be supported? → A: Uploaded, Deleted only
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Upload Documents (Priority: P1)
@@ -106,10 +115,12 @@ As an employee, I want to search for documents by title, tags, or content so tha
 - **FR-023**: System MUST log all document activities for audit purposes
 - **FR-024**: System MUST implement IDOR protection for document access
 - **FR-025**: System MUST use interface abstractions (IFileStorageService) for storage layer
+- **FR-026**: System MUST comply with WCAG 2.1 AA accessibility standards
+- **FR-027**: System MUST implement rate limiting of 10 uploads per minute per user and 100 API calls per minute per user
 
 ### Key Entities *(include if feature involves data)*
 
-- **Document**: Represents an uploaded file with metadata (title, description, category, tags, file path, upload info, associations)
+- **Document**: Represents an uploaded file with metadata (title, description, category, tags, file path, upload info, associations, status: Uploaded or Deleted)
 - **DocumentShare**: Tracks sharing relationships between documents and users
 - **DocumentCategory**: Predefined categories (Project Documents, Team Resources, Personal Files, Reports, Presentations, Other)
 
@@ -126,6 +137,7 @@ As an employee, I want to search for documents by title, tags, or content so tha
 - **SC-007**: Zero security incidents related to document access
 - **SC-008**: System handles 100 concurrent uploads without degradation
 - **SC-009**: 95% of users can successfully complete document upload on first attempt
+- **SC-010**: System maintains 99.9% uptime with automatic failover capabilities
 
 ## Assumptions
 
@@ -144,6 +156,7 @@ As an employee, I want to search for documents by title, tags, or content so tha
 - Development timeline: 8-10 weeks to production-ready
 - Database: DocumentId must be integer for consistency
 - Database: Category must store text values for simplicity
+- Storage limits: 10GB total system storage with 100MB per user quota
 
 ## Dependencies
 

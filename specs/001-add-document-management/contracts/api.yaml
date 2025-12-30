@@ -1,0 +1,456 @@
+openapi: 3.0.3
+info:
+  title: Document Management API
+  description: API for document upload, management, and sharing in ContosoDashboard
+  version: 1.0.0
+  contact:
+    name: Contoso Development Team
+
+servers:
+  - url: https://localhost:5001
+    description: Development server
+  - url: https://contosodashboard.com
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+paths:
+  /api/documents:
+    get:
+      summary: Get user's documents
+      description: Retrieve paginated list of documents uploaded by the current user
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: category
+          in: query
+          schema:
+            type: string
+            enum: [Project Documents, Team Resources, Personal Files, Reports, Presentations, Other]
+        - name: projectId
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Document'
+                  totalCount:
+                    type: integer
+                  page:
+                    type: integer
+                  pageSize:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Upload document
+      description: Upload a new document with metadata
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The document file to upload
+                title:
+                  type: string
+                  maxLength: 200
+                description:
+                  type: string
+                  maxLength: 1000
+                category:
+                  type: string
+                  enum: [Project Documents, Team Resources, Personal Files, Reports, Presentations, Other]
+                projectId:
+                  type: integer
+                tags:
+                  type: string
+                  maxLength: 500
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          description: File too large
+        '415':
+          description: Unsupported file type
+
+  /api/documents/{id}:
+    get:
+      summary: Get document details
+      description: Retrieve detailed information about a specific document
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Document details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+    put:
+      summary: Update document metadata
+      description: Update document title, description, category, or tags
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  maxLength: 200
+                description:
+                  type: string
+                  maxLength: 1000
+                category:
+                  type: string
+                  enum: [Project Documents, Team Resources, Personal Files, Reports, Presentations, Other]
+                tags:
+                  type: string
+                  maxLength: 500
+      responses:
+        '200':
+          description: Document updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Delete document
+      description: Permanently delete a document and its file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Document deleted
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/documents/{id}/download:
+    get:
+      summary: Download document
+      description: Download the document file
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: File download
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/documents/{id}/share:
+    post:
+      summary: Share document
+      description: Share a document with another user
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                userId:
+                  type: string
+                  description: ID of user to share with
+                permissions:
+                  type: string
+                  enum: [View, Download]
+                  default: Download
+      responses:
+        '201':
+          description: Document shared
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentShare'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /api/documents/shared:
+    get:
+      summary: Get shared documents
+      description: Get documents shared with the current user
+      responses:
+        '200':
+          description: Shared documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SharedDocument'
+
+  /api/projects/{projectId}/documents:
+    get:
+      summary: Get project documents
+      description: Get all documents associated with a project
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Project documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  schemas:
+    Document:
+      type: object
+      properties:
+        documentId:
+          type: integer
+          description: Unique document identifier
+        title:
+          type: string
+          description: Document title
+        description:
+          type: string
+          description: Document description
+        category:
+          type: string
+          enum: [Project Documents, Team Resources, Personal Files, Reports, Presentations, Other]
+        fileName:
+          type: string
+          description: Original filename
+        fileSize:
+          type: integer
+          format: int64
+          description: File size in bytes
+        fileType:
+          type: string
+          description: MIME type
+        uploadDate:
+          type: string
+          format: date-time
+        uploaderId:
+          type: string
+          description: User who uploaded the document
+        uploaderName:
+          type: string
+          description: Name of uploader
+        projectId:
+          type: integer
+          nullable: true
+        projectName:
+          type: string
+          nullable: true
+        tags:
+          type: string
+          nullable: true
+      required:
+        - documentId
+        - title
+        - category
+        - fileName
+        - fileSize
+        - fileType
+        - uploadDate
+        - uploaderId
+        - uploaderName
+
+    DocumentShare:
+      type: object
+      properties:
+        documentShareId:
+          type: integer
+        documentId:
+          type: integer
+        sharedById:
+          type: string
+        sharedByName:
+          type: string
+        sharedWithId:
+          type: string
+        sharedWithName:
+          type: string
+        sharedDate:
+          type: string
+          format: date-time
+        permissions:
+          type: string
+          enum: [View, Download]
+      required:
+        - documentShareId
+        - documentId
+        - sharedById
+        - sharedByName
+        - sharedWithId
+        - sharedWithName
+        - sharedDate
+        - permissions
+
+    SharedDocument:
+      type: object
+      properties:
+        document:
+          $ref: '#/components/schemas/Document'
+        sharedBy:
+          type: string
+        sharedDate:
+          type: string
+          format: date-time
+        permissions:
+          type: string
+          enum: [View, Download]
+      required:
+        - document
+        - sharedBy
+        - sharedDate
+        - permissions
+
+  responses:
+    BadRequest:
+      description: Invalid request data
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              errors:
+                type: object
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              example: "Authentication required"
+
+    Forbidden:
+      description: Access denied
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              example: "Access denied"
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              example: "Document not found"
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT</content>
+<parameter name="filePath">c:\Projects\ContosoDashboard\specs\001-add-document-management\contracts\api.yaml
